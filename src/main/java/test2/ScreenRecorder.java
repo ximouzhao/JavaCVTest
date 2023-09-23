@@ -131,19 +131,9 @@ public class ScreenRecorder {
                         e.printStackTrace();
                     }
                 }
+
             }).start();
 
-            new Thread(() -> {
-                while (recording) {
-                    try {
-                        recorder.record(grabber.grabFrame());
-
-                        Thread.sleep(85); // 等待0.1秒
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -156,8 +146,26 @@ public class ScreenRecorder {
             recording = false;
 
             //必须等待线程真正完成，否则就会提前关闭，导致报错
-            Thread.sleep(1000); // 等待1秒
+            Thread.sleep(2000); // 等待1秒
             // 停止抓取器和录制器
+
+
+            int count=0;
+            System.out.println("recorder.getFrameRate()="+recorder.getFrameRate());
+            System.out.println("grabber.getSampleRate()="+grabber.getSampleRate());
+            System.out.println("grabber.getLengthInFrames()="+grabber.getLengthInFrames());
+
+            while (count < 10* grabber.getAudioFrameRate()) {
+                try {
+                    recorder.record(grabber.grabFrame());
+                    count++;
+                    System.out.println("count:"+count);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+
             recorder.stop();
             grabber.stop();
             grabber.release();
